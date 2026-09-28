@@ -8,23 +8,17 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     permissions:
-      contents: write
+      contents: read
     steps:
       - uses: actions/checkout@v4
-      - name: Import reviewed v1.2 source
-        if: hashFiles('AITrainingQuest-Android-v1.2-reviewed.zip') != ''
-        run: |
-          echo '27913e41ed39856c68aca4671f89e27a2b8a7292b0aeee13c21ec3ca192953ee  AITrainingQuest-Android-v1.2-reviewed.zip' | sha256sum -c -
-          unzip -o AITrainingQuest-Android-v1.2-reviewed.zip -x '.github/*'
-          git rm AITrainingQuest-Android-v1.2-reviewed.zip
-          git add .gitignore README.md app build.gradle.kts settings.gradle.kts gradle.properties
-          git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'Import complete reviewed Android v1.2 source'
-          git push origin HEAD:main
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
       - uses: android-actions/setup-android@v3
+        with:
+          packages: platform-tools
+          log-accepted-android-sdk-licenses: false
       - name: Install Android SDK packages
         run: sdkmanager "platform-tools" "platforms;android-35" "build-tools;35.0.0"
       - uses: gradle/actions/setup-gradle@v4
